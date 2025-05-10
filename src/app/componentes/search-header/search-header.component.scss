@@ -28,14 +28,19 @@
   gap: 8px;
 }
 
-.pokeball-icon {
-  width: 24px;
-  height: 24px;
-  background-color: #ef4444;
-  /* red-500 */
-  border: 2px solid black;
-  border-radius: 50%;
+.pokemon-pin {
+  width: 30px;
+  height: 40px;
+  background-image: url('imagens/pokemon-pin-white-center.png');
+  background-size:contain;
+  background-repeat: no-repeat;
+  background-position: center;
   position: relative;
+}
+
+.pokeball-icon {
+  width: 30px;
+  height: 40px;
 }
 
 .pokeball-button {

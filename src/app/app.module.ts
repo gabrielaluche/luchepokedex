@@ -7,6 +7,7 @@ import { ListaPokemonComponent } from './componentes/lista-pokemon/lista-pokemon
 import { DetalhePokemonComponent } from './componentes/detalhe-pokemon/detalhe-pokemon.component';
 import { CardPokemonComponent } from './componentes/card-pokemon/card-pokemon.component';
 import { SearchHeaderComponent } from './componentes/search-header/search-header.component';
+import { PokedexService } from './services/pokedex.service';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import { SearchHeaderComponent } from './componentes/search-header/search-header
     BrowserModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [PokedexService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
