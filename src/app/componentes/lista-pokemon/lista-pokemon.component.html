@@ -2,4 +2,5 @@
   <div class="pokemon-card" *ngFor="let pokemon of listaPokemon">
     <p>{{ pokemon.name | titlecase }}</p>
   </div>
+  <app-search-header (typing)="filtraPokemon($event)" [value]="filtro"></app-search-header>
 </div>

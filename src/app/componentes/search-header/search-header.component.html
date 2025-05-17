@@ -14,6 +14,8 @@
         type="text"
         placeholder="Buscar Pokémon, cartas, habilidades..."
         class="search-input"
+        (keyup)="debounce.next($event.target)"
+        [value]="value"
       />
       <svg
         class="search-icon"
