@@ -1,1 +1,5 @@
-<p>lista-pokemon works!</p>
+<div class="pokemon-container">
+  <div class="pokemon-card" *ngFor="let pokemon of listaPokemon">
+    <p>{{ pokemon.name | titlecase }}</p>
+  </div>
+</div>
