@@ -1,7 +1,34 @@
+
+
+  <!--
+    Container principal que agrupa todos os cards de Pokémon e o componente de busca.
+    Normalmente usado para aplicar estilos de layout, como grid ou flexbox.
+  -->
 <div class="pokemon-container">
+  <!--
+    Estrutura de repetição (ngFor) que percorre a lista de Pokémons mapeados (listaMap).
+    Para cada Pokémon da lista, será criado um card com imagem e ID.
+  -->
   <div class="pokemon-card" *ngFor="let pokemon of listaPokemon">
-    <img style="width: 80px; height: 80px;"  src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/25.png" alt=""/>
-    <p>{{ pokemon.name | titlecase }}</p>
+    <!--
+      Exibe a imagem correspondente ao ID do Pokémon atual, onde concatenamos o valor do pokemon.id na URL, usando property binding.
+      Exemplo de URL: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png
+    -->
+    <img
+      style = "width: 80px; height: 80px;"
+      [src] = "'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/'+ pokemon.id + '.png'"
+      [alt] = "pokemon.nome"
+      />
+    <!--
+      Exibe o ID do Pokémon mapeado.
+      Pode ser usado para identificar o Pokémon ou compor a URL da imagem.
+    -->
+    <p>{{ pokemon.nome }}</p>
   </div>
+    <!--
+    Componente de cabeçalho de busca.
+    - (typing)="filtraPokemon($event)": quando o usuário digitar, dispara o método de filtro passando o evento.
+    - [value]="filtro": passa o valor atual do filtro como propriedade para o componente, permitindo controle do input.
+  -->
   <app-search-header (typing)="filtraPokemon($event)" [value]="filtro"></app-search-header>
 </div>
