@@ -1,5 +1,3 @@
-
-
   <!--
     Container principal que agrupa todos os cards de Pokémon e o componente de busca.
     Normalmente usado para aplicar estilos de layout, como grid ou flexbox.
@@ -13,17 +11,21 @@
     <!--
       Exibe a imagem correspondente ao ID do Pokémon atual, onde concatenamos o valor do pokemon.id na URL, usando property binding.
       Exemplo de URL: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png
+
+      GIF: https://github.com/PokeAPI/sprites/blob/master/sprites/pokemon/versions/generation-v/black-white/animated/
+
     -->
     <img
       style = "width: 80px; height: 80px;"
-      [src] = "'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/'+ pokemon.id + '.png'"
+      [src] = "'https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/versions/generation-v/black-white/animated/'+ pokemon.id + '.gif'"
+      (error) = "setFallbackImage($event)"
       [alt] = "pokemon.nome"
       />
     <!--
       Exibe o ID do Pokémon mapeado.
       Pode ser usado para identificar o Pokémon ou compor a URL da imagem.
     -->
-    <p>{{ pokemon.nome }}</p>
+    <p>#{{pokemon.id}}  {{ pokemon.nome }}</p>
   </div>
     <!--
     Componente de cabeçalho de busca.
