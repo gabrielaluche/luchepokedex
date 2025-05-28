@@ -76,14 +76,12 @@
   width: 20px;
   height: 20px;
   color: #6b7280;
-  /* gray-500 */
   position: absolute;
   top: 50%;
-  left: 12px;
+  left: 12px; /* um pouco mais afastado que 12px */
   transform: translateY(-50%);
   pointer-events: none;
 }
-
 .action-button {
   background-color: #2563eb;
   /* blue-600 */

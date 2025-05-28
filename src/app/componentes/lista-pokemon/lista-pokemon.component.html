@@ -1,36 +1,39 @@
+   <!--
+    Componente de cabeçalho de busca.
+    - (typing)="filtraPokemon($event)": quando o usuário digitar, dispara o método de filtro passando o evento.
+    - [value]="filtro": passa o valor atual do filtro como propriedade para o componente, permitindo controle do input.
+  -->
+  <app-search-header
+    (typing)="filtraPokemon($event)"
+    [value]="filtro">
+  </app-search-header>
   <!--
     Container principal que agrupa todos os cards de Pokémon e o componente de busca.
     Normalmente usado para aplicar estilos de layout, como grid ou flexbox.
   -->
-<div class="pokemon-container">
+  <div class="pokemon-container">
   <!--
     Estrutura de repetição (ngFor) que percorre a lista de Pokémons mapeados (listaMap).
     Para cada Pokémon da lista, será criado um card com imagem e ID.
   -->
   <div class="pokemon-card" *ngFor="let pokemon of listaPokemon">
-    <!--
-      Exibe a imagem correspondente ao ID do Pokémon atual, onde concatenamos o valor do pokemon.id na URL, usando property binding.
-      Exemplo de URL: https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png
-
-      GIF: https://github.com/PokeAPI/sprites/blob/master/sprites/pokemon/versions/generation-v/black-white/animated/
-
-    -->
-    <img
-      style = "width: 80px; height: 80px;"
-      [src] = "'https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/versions/generation-v/black-white/animated/'+ pokemon.id + '.gif'"
-      (error) = "setFallbackImage($event)"
-      [alt] = "pokemon.nome"
-      />
-    <!--
-      Exibe o ID do Pokémon mapeado.
-      Pode ser usado para identificar o Pokémon ou compor a URL da imagem.
-    -->
-    <p>#{{pokemon.id}}  {{ pokemon.nome }}</p>
+      <!--
+        Retorna a imagem (GIF) que corresponde ao ID do Pokémon usando property binding.
+      -->
+      <div class="pokemon-image">
+        <img
+          [src] = "'https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/other/dream-world/'+ pokemon.id + '.svg'"
+          (error) = "setFallbackImage($event)"
+          [alt] = "pokemon.nome"
+          />
+      </div>
+      <!-- INFORMAÇÕES -->
+      <div class="pokemon-info">
+        <p>{{ pokemon.nome }}</p>
+      </div>
+      <div class="pokemon-id">
+        <p>#{{ pokemon.id }}</p>
+        <p>#{{pokemon.info?.types?.[0]?.type?.name }}</p>
+      </div>
   </div>
-    <!--
-    Componente de cabeçalho de busca.
-    - (typing)="filtraPokemon($event)": quando o usuário digitar, dispara o método de filtro passando o evento.
-    - [value]="filtro": passa o valor atual do filtro como propriedade para o componente, permitindo controle do input.
-  -->
-  <app-search-header (typing)="filtraPokemon($event)" [value]="filtro"></app-search-header>
 </div>
