@@ -5,6 +5,7 @@ import { SearchHeaderComponent } from '../search-header/search-header.component'
 import { PokemonCardMapper } from 'src/app/shared/mapper/PokemonCardMapper'; // Importa a classe responsável por mapear os dados da API para o modelo utilizado na aplicação
 import { PokemonInfoMapper } from 'src/app/shared/mapper/PokemonInfoMapper'; // Importa a classe responsável por mapear as informações detalhadas do Pokémon
 import { Pokemon } from 'src/app/shared/model/pokemon'; // Importa o modelo Pokemon que representa a estrutura dos dados do Pokémon
+import { PokemonColorUtils } from 'src/app/shared/util/pokemon-color-utils';
 
 @Component({
   //Decorador que define o metadados do componente
@@ -66,4 +67,55 @@ export class ListaPokemonComponent implements OnInit {
       imgElement.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`;
     }
   }
+
+  // Método que retorna o tipo Pokémon, incluindo gradiente de fundo e sombra
+  getCardStyle(pokemon: any): any {
+    // Validação: verifica se pokemon.info e pokemon.info.types existem e possuem ao menos um item
+    if (!pokemon?.info?.types || pokemon.info.types.length === 0) {
+      return {}; // Estilo padrão ou vazio para evitar quebra
+    }
+
+    const bgStyle = PokemonColorUtils.getGradientFromApiTypes(pokemon.info?.types);
+    const boxShadow = this.getBoxShadow(pokemon.info?.types?.[0]?.type?.name);
+
+    return {
+      ...bgStyle,
+      'background-size': 'cover',
+      'background-position': 'initial',
+      'background-position-x': 'center',
+      'background-position-y': 'center',
+      'background-blend-mode': 'luminosity',
+      'box-shadow': boxShadow,
+    };
+  }
+
+  // Método que retorna a sombra do tipo do Pokémon
+  getBoxShadow(type: string): string {
+    return PokemonColorUtils.getTypeBorderGlowFromApi(type);
+  }
+  // Método que retorna a cor do tipo do Pokémon
+  typeColors: { [key: string]: string } = {
+    fire: '#F08030',
+    water: '#6890F0',
+    grass: '#78C850',
+    electric: '#F8D030',
+    ice: '#98D8D8',
+    fighting: '#C03028',
+    poison: '#A040A0',
+    ground: '#E0C068',
+    flying: '#A890F0',
+    psychic: '#F85888',
+    bug: '#A8B820',
+    rock: '#B8A038',
+    ghost: '#705898',
+    dragon: '#7038F8',
+    dark: '#705848',
+    steel: '#B8B8D0',
+    fairy: '#EE99AC',
+    normal: '#A8A878',
+  };
+
+
+
 }
+

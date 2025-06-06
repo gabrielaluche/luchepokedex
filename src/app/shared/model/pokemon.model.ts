@@ -5,4 +5,11 @@ export interface Pokemon {
   image: any; // URL da imagem do Pokémon
   description: string; // Descrição do Pokémon
   id: number; // ID do Pokémon
+  types: { // Lista de tipos do Pokémon
+    slot: number;
+    type: {
+      name: string;
+      url: string;
+    };
+  }[];
 }

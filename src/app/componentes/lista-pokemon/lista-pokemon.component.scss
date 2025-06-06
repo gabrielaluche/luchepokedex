@@ -1,49 +1,142 @@
+/* Lista de Pokémon - Estilos */
+
 .pokemon-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 20px;
-  max-width: 1200px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 40px;
+  width: 90%;
   margin: 40px auto;
-  padding: 20px;
 }
 
+// Estilos do card de Pokémon
 .pokemon-card {
-  background: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-in-out;
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  padding: 20px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
+  justify-content: center;
+  margin: 2px 2px;
+  padding: 30px;
   max-width: 200px;
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
+  height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform: scale(1.1);
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+}
 
-  .pokemon-image img {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 10px;
-  }
+/* Animação de fade-in para os cards de Pokémon */
+.pokemon-card:nth-child(odd) {
+  animation-delay: 0.1s;
+}
 
-  .pokemon-info p {
-    font-weight: bold;
-    margin: 10px 0;
-    font-size: 16px;
+@keyframes fadeIn {
+  to {
+    opacity: 1;
   }
+}
 
-  .pokemon-features {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 10px;
+// Efeito de hover no card de Pokémon
+.pokemon-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
 
-    .feature-icon {
-      background: #f2f2f2;
-      padding: 5px 8px;
-      border-radius: 8px;
-      font-size: 12px;
-    }
-  }
+// Estilos do tipo de Pokémon
+.pokemon-type {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+// Estilos do ícone de tipo de Pokémon
+.pokemon-type-icon {
+  //display: inline-block;
+  //border-radius: 100%;
+  border: white 2px solid;
+  height: 35px;
+  width: 35px;
+  transition: 200ms all;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  border-radius: 50%;
+  background-size: 25px 25px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  margin: 0 10px;
+  vertical-align: middle;
+}
+
+
+
+// Estilos da imagem do Pokémon
+.pokemon-card-image {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 12px;
+  display: block;
+  margin-bottom: 12px;
+  transition: transform 0.2s ease;
+  transform: scale(1.1);
+}
+
+.pokemon-card h2 {
+  font-size: 1.1rem;
+  margin: 0;
+  text-transform: capitalize;
+
+}
+
+.pokemon-card-number {
+  font-size: 15px;
+  margin: 4px 0;
+  text-align: end;
+}
+
+.pokemon-card-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 8px 0;
+  text-align: center;
+}
+
+.type-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 4px;
+}
+
+.pokemon-type-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-size: 25px 25px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.pokemon-type-text {
+  font-size: 12px;
+  text-align: center;
+  text-transform: capitalize;
+  color: #333;
 }

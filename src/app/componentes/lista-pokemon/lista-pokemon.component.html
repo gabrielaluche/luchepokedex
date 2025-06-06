@@ -1,39 +1,51 @@
-   <!--
-    Componente de cabeçalho de busca.
-    - (typing)="filtraPokemon($event)": quando o usuário digitar, dispara o método de filtro passando o evento.
-    - [value]="filtro": passa o valor atual do filtro como propriedade para o componente, permitindo controle do input.
-  -->
-  <app-search-header
-    (typing)="filtraPokemon($event)"
-    [value]="filtro">
-  </app-search-header>
-  <!--
-    Container principal que agrupa todos os cards de Pokémon e o componente de busca.
-    Normalmente usado para aplicar estilos de layout, como grid ou flexbox.
-  -->
-  <div class="pokemon-container">
-  <!--
-    Estrutura de repetição (ngFor) que percorre a lista de Pokémons mapeados (listaMap).
-    Para cada Pokémon da lista, será criado um card com imagem e ID.
-  -->
-  <div class="pokemon-card" *ngFor="let pokemon of listaPokemon">
-      <!--
-        Retorna a imagem (GIF) que corresponde ao ID do Pokémon usando property binding.
-      -->
-      <div class="pokemon-image">
-        <img
-          [src] = "'https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/other/dream-world/'+ pokemon.id + '.svg'"
-          (error) = "setFallbackImage($event)"
-          [alt] = "pokemon.nome"
-          />
-      </div>
-      <!-- INFORMAÇÕES -->
-      <div class="pokemon-info">
-        <p>{{ pokemon.nome }}</p>
-      </div>
-      <div class="pokemon-id">
-        <p>#{{ pokemon.id }}</p>
-        <p>#{{pokemon.info?.types?.[0]?.type?.name }}</p>
-      </div>
-  </div>
+<!-- Componente de cabeçalho de busca -->
+<app-search-header
+  (typing)="filtraPokemon($event)"
+  [value]="filtro">
+</app-search-header>
+
+<!-- Container principal que agrupa todos os cards de Pokémon -->
+<div class="pokemon-container">
+
+  <!-- Estrutura de repetição com cards detalhados -->
+  <div
+    class="pokemon-card"
+    *ngFor="let pokemon of listaPokemon"
+    [ngStyle]="getCardStyle(pokemon)"
+    >
+    <!-- ID do Pokémon -->
+    <span class = "pokemon-card-number" >
+    # {{ pokemon.id }}
+    </span>
+    <!-- Imagem do Pokémon -->
+    <div class="pokemon-image">
+      <img
+        [src]="'https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/other/dream-world/' + pokemon.id + '.svg'"
+        [alt]="pokemon.nome + ' image'"
+        class="pokemon-card-image"
+        (error)="setFallbackImage($event)"
+      />
+    </div>
+
+    <!-- Nome do Pokémon -->
+    <span class="pokemon-card-name">
+      {{ pokemon.nome }}
+    </span>
+    <div class="type-icon-wrapper">
+      <ng-container *ngFor="let tipo of pokemon.info?.types">
+        <div
+          class="pokemon-type-icon"
+          [ngStyle]="{
+            'background-image': 'url(../assets/imagens/icones/' + tipo.type.name + '.svg)',
+            'background-color': typeColors[tipo.type.name.toLowerCase()] || '#777'
+          }">
+        </div>
+      </ng-container>
+    </div>
+    <div class="pokemon-type-text">
+      <ng-container *ngFor="let tipo of pokemon.info?.types; let last = last">
+        {{ tipo.type.name }}<span *ngIf="!last"> / </span>
+      </ng-container>
+    </div>
 </div>
+
