@@ -14,7 +14,7 @@ export class PokedexService {
 
   constructor(private http: HttpClient) {}
 
-  // Método que busca a lista de todos os Pokémons contendo as informações nome e URL da imagem
+  // Método que busca a lista de todos os Pokémons (exceto os especiais) contendo as informações nome e URL da imagem
   getListaPokemon(): Observable<PokemonCardResponse[]> {
     return this.http.get<any>(this.apiUrlTodos).pipe(
       map(response => response.results as PokemonCardResponse[]),

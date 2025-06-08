@@ -1,3 +1,4 @@
+// Importa modelos, serviços, utilitários e operadores RxJS
 import { PokemonInfo } from './../../shared/model/PokemonInfo.model';
 import { Component, OnInit, Input } from '@angular/core'; // Importa os módulos necessários do Angular
 import { PokedexService } from 'src/app/services/pokedex.service'; // Importa o serviço responsável por fazer requisições à API
@@ -6,71 +7,97 @@ import { PokemonCardMapper } from 'src/app/shared/mapper/PokemonCardMapper'; // 
 import { PokemonInfoMapper } from 'src/app/shared/mapper/PokemonInfoMapper'; // Importa a classe responsável por mapear as informações detalhadas do Pokémon
 import { Pokemon } from 'src/app/shared/model/pokemon'; // Importa o modelo Pokemon que representa a estrutura dos dados do Pokémon
 import { PokemonColorUtils } from 'src/app/shared/util/pokemon-color-utils';
+import { Subject, debounceTime } from 'rxjs';
 
+// Componente que representa a lista de Pokémons
 @Component({
-  //Decorador que define o metadados do componente
   selector: 'app-lista-pokemon', // Nome da tag HTML que representa esse componente
   templateUrl: './lista-pokemon.component.html', // Caminho do template HTML
   styleUrls: ['./lista-pokemon.component.scss'], // Caminho do CSS
 })
 export class ListaPokemonComponent implements OnInit {
-  // Classe do componente que implementa o ciclo de vida OnInit
-
-  // Lista que será exibida na tela, contendo os Pokémons filtrados
-  listaPokemon: Pokemon[] = [];
-  // String que armazena o texto digitado no campo de filtro
-  filtro = '';
-  // Lista geral com todos os Pokémons retornados pela API
+  // Lista principal (todos os Pokémons carregados da API)
   listaGeral: Pokemon[] = [];
-  // Lista com os Pokémons mapeados para um modelo mais adequado (classe Pokemon)
-  listaMap: Pokemon[] = [];
-  // Injeção de dependências via construtor
 
-  //Variaveis para controle de paginação
+  // Lista usada para exibir após aplicar filtro
+  listaFiltrada: Pokemon[] = [];
+
+  // Lista exibida na tela com base na paginação
   listaPokemonExibida: any[] = [];
+
+  // Texto digitado no campo de busca
+  filtro = '';
+
+  // Controle de paginação
   pagina = 0;
   itensPorPagina = 20;
 
+  // Suporte a debounce (atraso) na busca
+  filtroSubject: Subject<string> = new Subject<string>();
+
   constructor(
-    private pokedexService: PokedexService, // Serviço responsável por fazer requisições à API
-    private mapper: PokemonCardMapper, // Classe responsável por transformar (mapear) os dados da API para modelos utilizados na aplicação
-    private infoMapper: PokemonInfoMapper // Classe responsável por mapear as informações detalhadas do Pokémon
+    private pokedexService: PokedexService, // Serviço que acessa a API
+    private mapper: PokemonCardMapper, // Converte a resposta da API para modelo interno
+    private infoMapper: PokemonInfoMapper, // Converte detalhes do Pokémon para modelo interno
   ) {}
 
-  // Método que filtra a lista de Pokémons com base no evento (texto digitado)
+  // Função chamada quando o usuário digita na busca
   filtraPokemon(event: any): void {
-    this.listaPokemon = this.listaGeral.filter((item) =>
-      // Filtra pelo nome que inclui o texto digitado
-      item.nome.includes(event as string)
-    );
+    this.filtroSubject.next(event); // Envia valor para o Subject (com debounce)
   }
+
+  // Aplica o filtro na lista geral
+  aplicarFiltro(filtro: string): void {
+    this.filtro = filtro;
+
+    // Filtra por nome (ignorando maiúsculas/minúsculas)
+    this.listaFiltrada = this.listaGeral.filter((item) =>
+      item.nome.includes(filtro.toLowerCase())
+    );
+
+    // Reinicia lista exibida e paginação
+    this.listaPokemonExibida = [];
+    this.pagina = 0;
+    this.carregarMaisPokemons();
+  }
+
+  // Adiciona mais Pokémons na tela (scroll infinito)
   carregarMaisPokemons() {
     const inicio = this.pagina * this.itensPorPagina;
     const fim = inicio + this.itensPorPagina;
-    const novosPokemons = this.listaPokemon.slice(inicio, fim);
+
+    // Usa lista filtrada se houver filtro ativo
+    const baseLista = this.filtro ? this.listaFiltrada : this.listaGeral;
+
+    // Adiciona mais itens à lista exibida
+    const novosPokemons = baseLista.slice(inicio, fim);
     this.listaPokemonExibida.push(...novosPokemons);
     this.pagina++;
   }
 
-  // Método do ciclo de vida que é executado automaticamente quando o componente é inicializado
+  // Inicializa o componente
   ngOnInit(): void {
-    // Chamada ao serviço para buscar a lista de Pokémons
+    // Aplica debounce na busca (espera 300ms após digitação)
+    this.filtroSubject.pipe(debounceTime(300)).subscribe((filtro) => {
+      this.aplicarFiltro(filtro);
+    });
+
+    // Busca lista de Pokémons na API
     this.pokedexService.getListaPokemon().subscribe((response) => {
-      // Faz a requisição à API e obtém a resposta
-      this.listaPokemon = this.mapper.mapFromDTO(response); // Mapeia os dados da API para o modelo Pokemon
-      this.listaGeral = this.listaPokemon; // Armazena a lista geral de Pokémons
-      // Mapeia a lista de Pokémons para o modelo PokemonInfo
-      // Isso é feito para que cada Pokémon tenha informações adicionais, como altura, peso, habilidades, etc.
+      this.listaGeral = this.mapper.mapFromDTO(response); // Converte para modelo interno
+      this.listaFiltrada = this.listaGeral; // Inicialmente, exibe todos os pokemons
+
+      // Para cada Pokémon, busca seus detalhes (como tipos, habilidades etc.)
       this.listaGeral.forEach((pokemon) => {
         this.pokedexService.getPokemonById(pokemon.nome).subscribe((info) => {
-          // Para cada Pokémon, busca as informações detalhadas e mapeia para o modelo PokemonInfo
           pokemon.info = this.infoMapper.mapFromDTO(info);
         });
       });
-      //Chamada do metodo responsavel por controlar o numero de pokemons a ser exibido na tela
-      this.carregarMaisPokemons();
+      console.log('Tamanho da lista geral ' + this.listaGeral.length);
+      this.carregarMaisPokemons(); // Carrega primeiros itens
     });
   }
+
   // Método que define uma imagem alternativa para exibição caso a imagem não não seja encontrada
   setFallbackImage(event: Event) {
     const imgElement = event.target as HTMLImageElement;
@@ -84,6 +111,7 @@ export class ListaPokemonComponent implements OnInit {
     }
   }
 
+  // Estilo visual do card com base no tipo do Pokémon
   // Método que retorna o tipo Pokémon, incluindo gradiente de fundo e sombra
   getCardStyle(pokemon: any): any {
     // Validação: verifica se pokemon.info e pokemon.info.types existem e possuem ao menos um item
@@ -107,11 +135,12 @@ export class ListaPokemonComponent implements OnInit {
     };
   }
 
-  // Método que retorna a sombra do tipo do Pokémon
+  // Define sombra do card com base no tipo do Pokémon
   getBoxShadow(type: string): string {
     return PokemonColorUtils.getTypeBorderGlowFromApi(type);
   }
-  // Método que retorna a cor do tipo do Pokémon
+
+  // Cores associadas aos tipos dos Pokémons (usadas para ícones, etc.)
   typeColors: { [key: string]: string } = {
     fire: '#F08030',
     water: '#6890F0',
@@ -133,4 +162,3 @@ export class ListaPokemonComponent implements OnInit {
     normal: '#A8A878',
   };
 }
-
