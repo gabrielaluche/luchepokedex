@@ -10,7 +10,7 @@
   <!-- Estrutura de repetição com cards detalhados -->
   <div
     class="pokemon-card"
-    *ngFor="let pokemon of listaPokemon"
+    *ngFor="let pokemon of listaPokemonExibida"
     [ngStyle]="getCardStyle(pokemon)"
     >
     <!-- ID do Pokémon -->
@@ -48,4 +48,13 @@
       </ng-container>
     </div>
 </div>
+<!-- Detector de scroll -->
+<div
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="150"
+  (scrolled)="carregarMaisPokemons()"
+>
+</div>
+
 

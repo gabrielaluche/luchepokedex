@@ -15,6 +15,7 @@ import { PokemonColorUtils } from 'src/app/shared/util/pokemon-color-utils';
 })
 export class ListaPokemonComponent implements OnInit {
   // Classe do componente que implementa o ciclo de vida OnInit
+
   // Lista que será exibida na tela, contendo os Pokémons filtrados
   listaPokemon: Pokemon[] = [];
   // String que armazena o texto digitado no campo de filtro
@@ -24,6 +25,12 @@ export class ListaPokemonComponent implements OnInit {
   // Lista com os Pokémons mapeados para um modelo mais adequado (classe Pokemon)
   listaMap: Pokemon[] = [];
   // Injeção de dependências via construtor
+
+  //Variaveis para controle de paginação
+  listaPokemonExibida: any[] = [];
+  pagina = 0;
+  itensPorPagina = 20;
+
   constructor(
     private pokedexService: PokedexService, // Serviço responsável por fazer requisições à API
     private mapper: PokemonCardMapper, // Classe responsável por transformar (mapear) os dados da API para modelos utilizados na aplicação
@@ -36,6 +43,13 @@ export class ListaPokemonComponent implements OnInit {
       // Filtra pelo nome que inclui o texto digitado
       item.nome.includes(event as string)
     );
+  }
+  carregarMaisPokemons() {
+    const inicio = this.pagina * this.itensPorPagina;
+    const fim = inicio + this.itensPorPagina;
+    const novosPokemons = this.listaPokemon.slice(inicio, fim);
+    this.listaPokemonExibida.push(...novosPokemons);
+    this.pagina++;
   }
 
   // Método do ciclo de vida que é executado automaticamente quando o componente é inicializado
@@ -53,6 +67,8 @@ export class ListaPokemonComponent implements OnInit {
           pokemon.info = this.infoMapper.mapFromDTO(info);
         });
       });
+      //Chamada do metodo responsavel por controlar o numero de pokemons a ser exibido na tela
+      this.carregarMaisPokemons();
     });
   }
   // Método que define uma imagem alternativa para exibição caso a imagem não não seja encontrada
@@ -75,7 +91,9 @@ export class ListaPokemonComponent implements OnInit {
       return {}; // Estilo padrão ou vazio para evitar quebra
     }
 
-    const bgStyle = PokemonColorUtils.getGradientFromApiTypes(pokemon.info?.types);
+    const bgStyle = PokemonColorUtils.getGradientFromApiTypes(
+      pokemon.info?.types
+    );
     const boxShadow = this.getBoxShadow(pokemon.info?.types?.[0]?.type?.name);
 
     return {
@@ -114,8 +132,5 @@ export class ListaPokemonComponent implements OnInit {
     fairy: '#EE99AC',
     normal: '#A8A878',
   };
-
-
-
 }
 

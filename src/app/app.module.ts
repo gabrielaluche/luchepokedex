@@ -9,6 +9,7 @@ import { CardPokemonComponent } from './componentes/card-pokemon/card-pokemon.co
 import { SearchHeaderComponent } from './componentes/search-header/search-header.component';
 import { PokedexService } from './services/pokedex.service';
 import { HttpClientModule } from '@angular/common/http';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll'
 
 @NgModule({
   declarations: [
@@ -16,12 +17,13 @@ import { HttpClientModule } from '@angular/common/http';
     ListaPokemonComponent,
     DetalhePokemonComponent,
     CardPokemonComponent,
-    SearchHeaderComponent
+    SearchHeaderComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    InfiniteScrollModule
   ],
   providers: [PokedexService],
   bootstrap: [AppComponent]

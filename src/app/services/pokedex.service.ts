@@ -9,7 +9,7 @@ import { map, switchMap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class PokedexService {
-  private apiUrlTodos = 'https://pokeapi.co/api/v2/pokemon?limit=650';
+  private apiUrlTodos = 'https://pokeapi.co/api/v2/pokemon?limit=1025';
   private apiUrlPokemon = 'https://pokeapi.co/api/v2/pokemon/';
 
   constructor(private http: HttpClient) {}
