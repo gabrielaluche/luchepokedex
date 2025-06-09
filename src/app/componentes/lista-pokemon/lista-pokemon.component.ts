@@ -8,6 +8,8 @@ import { PokemonInfoMapper } from 'src/app/shared/mapper/PokemonInfoMapper'; // 
 import { Pokemon } from 'src/app/shared/model/pokemon'; // Importa o modelo Pokemon que representa a estrutura dos dados do Pokémon
 import { PokemonColorUtils } from 'src/app/shared/util/pokemon-color-utils';
 import { Subject, debounceTime } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { DetalhePokemonComponent } from '../detalhe-pokemon/detalhe-pokemon.component';
 
 // Componente que representa a lista de Pokémons
 @Component({
@@ -39,7 +41,17 @@ export class ListaPokemonComponent implements OnInit {
     private pokedexService: PokedexService, // Serviço que acessa a API
     private mapper: PokemonCardMapper, // Converte a resposta da API para modelo interno
     private infoMapper: PokemonInfoMapper, // Converte detalhes do Pokémon para modelo interno
+    private dialog: MatDialog //Modal
   ) {}
+
+  abrirDetalhe(pokemon: Pokemon): void {
+    console.log('Abrindo detalhe para:', pokemon); // ← veja no console
+    this.dialog.open(DetalhePokemonComponent, {
+      width: '100%',
+      data: pokemon,
+      panelClass: 'dialog-centralizado',
+    });
+  }
 
   // Função chamada quando o usuário digita na busca
   filtraPokemon(event: any): void {

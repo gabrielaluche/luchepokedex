@@ -1,3 +1,4 @@
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -9,7 +10,8 @@ import { CardPokemonComponent } from './componentes/card-pokemon/card-pokemon.co
 import { SearchHeaderComponent } from './componentes/search-header/search-header.component';
 import { PokedexService } from './services/pokedex.service';
 import { HttpClientModule } from '@angular/common/http';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll'
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { MatDialogModule } from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -19,13 +21,20 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll'
     CardPokemonComponent,
     SearchHeaderComponent,
   ],
+  
+  entryComponents: [
+    DetalhePokemonComponent,
+  ],
+
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    BrowserAnimationsModule,
+    MatDialogModule,
   ],
   providers: [PokedexService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
