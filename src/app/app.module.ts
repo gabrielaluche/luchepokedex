@@ -11,7 +11,7 @@ import { SearchHeaderComponent } from './componentes/search-header/search-header
 import { PokedexService } from './services/pokedex.service';
 import { HttpClientModule } from '@angular/common/http';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { MatDialogModule } from '@angular/material';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -21,7 +21,7 @@ import { MatDialogModule } from '@angular/material';
     CardPokemonComponent,
     SearchHeaderComponent,
   ],
-  
+
   entryComponents: [
     DetalhePokemonComponent,
   ],

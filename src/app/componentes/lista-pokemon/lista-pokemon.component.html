@@ -12,7 +12,7 @@
     class="pokemon-card"
     *ngFor="let pokemon of listaPokemonExibida"
     [ngStyle]="getCardStyle(pokemon)"
-    (click)="abrirDetalhe(pokemon)"
+    (click)="telaPokemonDetalhe(pokemon)"
     >
     <!-- ID do Pokémon -->
     <span class = "pokemon-card-number" >

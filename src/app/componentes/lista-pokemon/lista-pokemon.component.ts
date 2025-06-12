@@ -38,17 +38,18 @@ export class ListaPokemonComponent implements OnInit {
   filtroSubject: Subject<string> = new Subject<string>();
 
   constructor(
+    public dialog: MatDialog, //Modal
     private pokedexService: PokedexService, // Serviço que acessa a API
     private mapper: PokemonCardMapper, // Converte a resposta da API para modelo interno
     private infoMapper: PokemonInfoMapper, // Converte detalhes do Pokémon para modelo interno
-    private dialog: MatDialog //Modal
+
   ) {}
 
-  abrirDetalhe(pokemon: Pokemon): void {
-    console.log('Abrindo detalhe para:', pokemon); // ← veja no console
+  telaPokemonDetalhe(nomePokemon: string): void {
+    console.log('Abrindo detalhe para:', nomePokemon); 
     this.dialog.open(DetalhePokemonComponent, {
       width: '100%',
-      data: pokemon,
+      data: nomePokemon,
       panelClass: 'dialog-centralizado',
     });
   }
