@@ -1,14 +1,13 @@
 // Importa modelos, serviços, utilitários e operadores RxJS
-import { PokemonInfo } from './../../shared/model/PokemonInfo.model';
 import { Component, OnInit, Input } from '@angular/core'; // Importa os módulos necessários do Angular
 import { PokedexService } from 'src/app/services/pokedex.service'; // Importa o serviço responsável por fazer requisições à API
-import { SearchHeaderComponent } from '../search-header/search-header.component'; // Importa o componente de cabeçalho de busca
 import { PokemonCardMapper } from 'src/app/shared/mapper/PokemonCardMapper'; // Importa a classe responsável por mapear os dados da API para o modelo utilizado na aplicação
 import { PokemonInfoMapper } from 'src/app/shared/mapper/PokemonInfoMapper'; // Importa a classe responsável por mapear as informações detalhadas do Pokémon
 import { Pokemon } from 'src/app/shared/model/pokemon'; // Importa o modelo Pokemon que representa a estrutura dos dados do Pokémon
 import { PokemonColorUtils } from 'src/app/shared/util/pokemon-color-utils';
 import { Subject, debounceTime } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DetalhePokemonComponent } from '../detalhe-pokemon/detalhe-pokemon.component';
 
 // Componente que representa a lista de Pokémons
@@ -37,22 +36,16 @@ export class ListaPokemonComponent implements OnInit {
   // Suporte a debounce (atraso) na busca
   filtroSubject: Subject<string> = new Subject<string>();
 
+  //Modal
+  name: String = 'Angular';
+  text: String = 'The text';
+
   constructor(
-    public dialog: MatDialog, //Modal
     private pokedexService: PokedexService, // Serviço que acessa a API
     private mapper: PokemonCardMapper, // Converte a resposta da API para modelo interno
     private infoMapper: PokemonInfoMapper, // Converte detalhes do Pokémon para modelo interno
-
+    private modalService: NgbModal
   ) {}
-
-  telaPokemonDetalhe(nomePokemon: string): void {
-    console.log('Abrindo detalhe para:', nomePokemon); 
-    this.dialog.open(DetalhePokemonComponent, {
-      width: '100%',
-      data: nomePokemon,
-      panelClass: 'dialog-centralizado',
-    });
-  }
 
   // Função chamada quando o usuário digita na busca
   filtraPokemon(event: any): void {
@@ -120,7 +113,7 @@ export class ListaPokemonComponent implements OnInit {
     if (idMatch) {
       const id = idMatch[1];
       // Se o ID for encontrado, define a imagem alternativa (PNG) para o Pokémon
-      imgElement.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`;
+      imgElement.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
     }
   }
 
@@ -174,4 +167,20 @@ export class ListaPokemonComponent implements OnInit {
     fairy: '#EE99AC',
     normal: '#A8A878',
   };
+
+  //Metodo que vai enviar os dados do objeto pokemon com as informações do Pokemon retornadas pela API
+  telaPokemonDetalhe(pokemon: Pokemon): void {
+    console.log('Abrindo detalhe para:', pokemon);
+  }
+
+  abrirDetalhe(pokemon: any): void {
+    const modalRef = this.modalService.open(DetalhePokemonComponent, {
+      size: 'lg',
+      centered: true,
+      backdrop: 'static',
+      keyboard: false,
+    });
+
+    modalRef.componentInstance.pokemon = pokemon;
+  }
 }

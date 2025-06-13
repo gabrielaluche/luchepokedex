@@ -1,1 +1,43 @@
-<p>detalhe-pokemon works!</p>
+<div class="modal-header">
+  <h5 class="modal-title text-capitalize">{{ pokemon?.nome }}</h5>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="fechar()"
+  ></button>
+</div>
+
+<div class="modal-body">
+  <div class="text-center mb-3">
+    <img
+      *ngIf="pokemon?.info?.sprites?.front_default"
+      [src]="pokemon.info.sprites.front_default"
+      alt="{{ pokemon.nome }}"
+      class="img-fluid"
+      style="max-height: 120px"
+    />
+  </div>
+
+  <p><strong>Altura:</strong> {{ pokemon?.info?.height }}</p>
+  <p><strong>Peso:</strong> {{ pokemon?.info?.weight }}</p>
+
+  <p *ngIf="text"><strong>Texto:</strong> {{ text }}</p>
+</div>
+
+<div class="modal-footer">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    (click)="fechar()"
+  >
+    {{ closeLabel || 'Fechar' }}
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    (click)="saveChangeModal(modalId)"
+  >
+    {{ saveLabel || 'Salvar' }}
+  </button>
+</div>
