@@ -1,3 +1,26 @@
 :host ::ng-deep .modal-content {
   border-radius: 1rem;
 }
+
+.background-details {
+font-size: 1.2rem;
+font-weight: 600;
+backdrop-filter: blur(10px);
+animation-fill-mode: forwards;
+animation-timing-function: ease-in-out;
+border-radius: 16px;
+justify-content: center;
+margin: 2px 2px;
+padding: 30px;
+max-width: 200px;
+height: 280px;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+transition: transform 0.3s ease,
+box-shadow 0.3s ease;
+transform: scale(1.1);
+opacity: 0;
+animation: fadeIn 0.5s ease forwards;
+}

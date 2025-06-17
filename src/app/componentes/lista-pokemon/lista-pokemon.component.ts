@@ -5,7 +5,7 @@ import { PokemonCardMapper } from 'src/app/shared/mapper/PokemonCardMapper'; // 
 import { PokemonInfoMapper } from 'src/app/shared/mapper/PokemonInfoMapper'; // Importa a classe responsável por mapear as informações detalhadas do Pokémon
 import { Pokemon } from 'src/app/shared/model/pokemon'; // Importa o modelo Pokemon que representa a estrutura dos dados do Pokémon
 import { PokemonColorUtils } from 'src/app/shared/util/pokemon-color-utils';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject, debounceTime, forkJoin, map } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DetalhePokemonComponent } from '../detalhe-pokemon/detalhe-pokemon.component';
@@ -17,6 +17,7 @@ import { DetalhePokemonComponent } from '../detalhe-pokemon/detalhe-pokemon.comp
   styleUrls: ['./lista-pokemon.component.scss'], // Caminho do CSS
 })
 export class ListaPokemonComponent implements OnInit {
+
   // Lista principal (todos os Pokémons carregados da API)
   listaGeral: Pokemon[] = [];
 
@@ -84,23 +85,35 @@ export class ListaPokemonComponent implements OnInit {
   // Inicializa o componente
   ngOnInit(): void {
     // Aplica debounce na busca (espera 300ms após digitação)
-    this.filtroSubject.pipe(debounceTime(300)).subscribe((filtro) => {
-      this.aplicarFiltro(filtro);
-    });
+   this.filtroSubject.pipe(debounceTime(300)).subscribe((filtro) => {
+     this.aplicarFiltro(filtro);
+   });
 
     // Busca lista de Pokémons na API
     this.pokedexService.getListaPokemon().subscribe((response) => {
-      this.listaGeral = this.mapper.mapFromDTO(response); // Converte para modelo interno
-      this.listaFiltrada = this.listaGeral; // Inicialmente, exibe todos os pokemons
+      //Mapeia a lista inicial
+      const listaGeral = this.mapper.mapFromDTO(response);
+      //cria um array de Observables
+      const requests = listaGeral.map(pokemon =>
+        this.pokedexService.getPokemonById(pokemon.nome).pipe(
+          map(info => {
+            //combina o objeto inicial com as informações detalhadas
+            pokemon.info = this.infoMapper.mapFromDTO(info)
+            return pokemon; //retorna o pokemon "enriquecido"
+          })
+        )
+      );
+      //Usa forkjoin para esperar todas as requisiçoes terminarem
+      forkJoin(requests).subscribe((pokemonsCompletos) => {
+        console.log('Todos os detalhes dos pokémons foram carregados.');
 
-      // Para cada Pokémon, busca seus detalhes (como tipos, habilidades etc.)
-      this.listaGeral.forEach((pokemon) => {
-        this.pokedexService.getPokemonById(pokemon.nome).subscribe((info) => {
-          pokemon.info = this.infoMapper.mapFromDTO(info);
-        });
-      });
-      console.log('Tamanho da lista geral ' + this.listaGeral.length);
-      this.carregarMaisPokemons(); // Carrega primeiros itens
+        //A partir de agora, a listaGeral tem todos os dados necessários
+        this.listaGeral = pokemonsCompletos;
+        this.listaFiltrada = this.listaGeral;
+        //Carregamos os primeiros pokémons na tela
+        this.carregarMaisPokemons(); 
+      })
+
     });
   }
 
@@ -119,12 +132,11 @@ export class ListaPokemonComponent implements OnInit {
 
   // Estilo visual do card com base no tipo do Pokémon
   // Método que retorna o tipo Pokémon, incluindo gradiente de fundo e sombra
-  getCardStyle(pokemon: any): any {
+  getStyleColors(pokemon: any) {
     // Validação: verifica se pokemon.info e pokemon.info.types existem e possuem ao menos um item
-    if (!pokemon?.info?.types || pokemon.info.types.length === 0) {
-      return {}; // Estilo padrão ou vazio para evitar quebra
-    }
-
+    return this.pokedexService.getStyleColors(pokemon);
+  }
+  /*
     const bgStyle = PokemonColorUtils.getGradientFromApiTypes(
       pokemon.info?.types
     );
@@ -139,8 +151,10 @@ export class ListaPokemonComponent implements OnInit {
       'background-blend-mode': 'luminosity',
       'box-shadow': boxShadow,
     };
-  }
 
+  }
+*/
+  /*
   // Define sombra do card com base no tipo do Pokémon
   getBoxShadow(type: string): string {
     return PokemonColorUtils.getTypeBorderGlowFromApi(type);
@@ -167,7 +181,7 @@ export class ListaPokemonComponent implements OnInit {
     fairy: '#EE99AC',
     normal: '#A8A878',
   };
-
+*/
   //Metodo que vai enviar os dados do objeto pokemon com as informações do Pokemon retornadas pela API
   telaPokemonDetalhe(pokemon: Pokemon): void {
     console.log('Abrindo detalhe para:', pokemon);
@@ -182,5 +196,25 @@ export class ListaPokemonComponent implements OnInit {
     });
 
     modalRef.componentInstance.pokemon = pokemon;
+
+    modalRef.result.then(
+      (result) => {
+        // Este bloco é executado se o modal for fechado com .close()
+        console.log(`Modal fechado com resultado: ${result}`);
+        if (result === 'saved') {
+          // AGORA SIM! A lista executa sua própria lógica
+          // após o modal confirmar que salvou.
+          // Ex: Atualizar a lista, mudar um estilo, etc.
+          // A função getCardStyle está aqui, então podemos chamá-la.
+          console.log('O modal foi salvo, vou atualizar o que for preciso.');
+          // this.getCardStyle(pokemon); // Se precisar chamar a função novamente.
+          // ou this.recarregarLista();
+        }
+      },
+      (reason) => {
+        // Este bloco é executado se o modal for dispensado (clicando fora, ESC, ou .dismiss())
+        console.log(`Modal dispensado com motivo: ${reason}`);
+      }
+    );
   }
 }

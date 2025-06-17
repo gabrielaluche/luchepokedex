@@ -1,7 +1,9 @@
+import { NgModule } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
 import { PokedexService } from 'src/app/services/pokedex.service';
 import { Pokemon } from 'src/app/shared/model/pokemon';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ListaPokemonComponent } from '../lista-pokemon/lista-pokemon.component';
 
 @Component({
   selector: 'app-detalhe-pokemon',
@@ -17,14 +19,17 @@ export class DetalhePokemonComponent implements OnInit {
   @Input() saveLabel: string = '';
   @Input() pokemon: Pokemon | any;
 
-  ngOnInit(): void {
-    // Pode deixar vazio se não precisar fazer nada na inicialização
-  }
-  
   constructor(
     public pokeService: PokedexService,
     public activeModal: NgbActiveModal
-  ) {}
+  ) //public listapokemon: ListaPokemonComponent
+  {}
+
+  ngOnInit(): void {}
+
+  getStyleColors(pokemon: any){
+    return this.pokeService.getStyleColors(pokemon)
+  }
 
   saveChangeModal(idmodal: string) {
     console.log('close' + ' : ' + idmodal);
@@ -39,10 +44,12 @@ export class DetalhePokemonComponent implements OnInit {
       this.pokeService.saveText(this.text);
     }
 
-    this.activeModal.close(); // fecha o modal após salvar
+    this.activeModal.close('saved'); // fecha o modal após salvar
+
+    //this.listapokemon.getCardStyle(this.pokemon);
   }
 
   fechar(): void {
-    this.activeModal.dismiss(); // ou .close() se quiser finalizar normalmente
+    this.activeModal.dismiss('dismissed'); // ou .close() se quiser finalizar normalmente
   }
 }

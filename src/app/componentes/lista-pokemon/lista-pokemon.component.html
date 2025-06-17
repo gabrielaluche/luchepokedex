@@ -11,7 +11,7 @@
   <div
     class="pokemon-card"
     *ngFor="let pokemon of listaPokemonExibida"
-    [ngStyle]="getCardStyle(pokemon)"
+    [ngStyle]="getStyleColors(pokemon)"
     (click)="abrirDetalhe(pokemon)"
 
     >
@@ -39,7 +39,7 @@
           class="pokemon-type-icon"
           [ngStyle]="{
             'background-image': 'url(../assets/imagens/icones/' + tipo.type.name + '.svg)',
-            'background-color': typeColors[tipo.type.name.toLowerCase()] || '#777'
+            'background-color': getStyleColors(pokemon) || '#777'
           }">
         </div>
       </ng-container>
