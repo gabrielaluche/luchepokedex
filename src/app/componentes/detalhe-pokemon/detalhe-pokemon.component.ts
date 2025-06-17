@@ -1,9 +1,6 @@
-import { NgModule } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
 import { PokedexService } from 'src/app/services/pokedex.service';
-import { Pokemon } from 'src/app/shared/model/pokemon';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ListaPokemonComponent } from '../lista-pokemon/lista-pokemon.component';
 
 @Component({
   selector: 'app-detalhe-pokemon',
@@ -11,45 +8,76 @@ import { ListaPokemonComponent } from '../lista-pokemon/lista-pokemon.component'
   styleUrls: ['./detalhe-pokemon.component.scss'],
 })
 export class DetalhePokemonComponent implements OnInit {
-  @Input() title: string = '';
-  @Input() text: string = '';
+  @Input() pokemon: any;
 
-  @Input() modalId: string = '';
-  @Input() closeLabel: string = '';
-  @Input() saveLabel: string = '';
-  @Input() pokemon: Pokemon | any;
+  pokemonSpecies: any;
+  evolutionChain: any;
 
   constructor(
-    public pokeService: PokedexService,
+    public pokedexService: PokedexService,
     public activeModal: NgbActiveModal
-  ) //public listapokemon: ListaPokemonComponent
-  {}
+  ) {}
 
-  ngOnInit(): void {}
-
-  getStyleColors(pokemon: any){
-    return this.pokeService.getStyleColors(pokemon)
+  ngOnInit(): void {
+    if (this.pokemon?.info) {
+      this.carregarDadosAdicionais();
+    }
   }
 
-  saveChangeModal(idmodal: string) {
-    console.log('close' + ' : ' + idmodal);
+  carregarDadosAdicionais(): void {
+    this.pokedexService
+      .getPokemonSpecies(this.pokemon.info.id)
+      .subscribe((speciesData) => {
+        this.pokemonSpecies = speciesData;
 
-    if (idmodal == 'exampleModalLive1') {
-      console.log('save title value : ' + this?.title);
-      this.pokeService.saveTitle(this.title);
+        if (speciesData.evolution_chain?.url) {
+          this.pokedexService
+            .getEvolutionChain(speciesData.evolution_chain.url)
+            .subscribe((evolutionData) => {
+              this.evolutionChain = evolutionData;
+            });
+        }
+      });
+  }
+
+  get pokemonImageUrl(): string {
+    if (!this.pokemon?.info?.sprites) {
+      return '';
     }
+    const sprites = this.pokemon.info.sprites;
+    return (
+      sprites.other?.['official-artwork']?.front_default ||
+      sprites.front_default ||
+      ''
+    );
+  }
 
-    if (idmodal == 'exampleModalLive2') {
-      console.log('save text value : ' + this.text);
-      this.pokeService.saveText(this.text);
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src =
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';
+  }
+
+  getStyleColors(pokemon: any) {
+    return this.pokedexService.getStyleColors(pokemon);
+  }
+
+  getPokemonGenus(lang: string): string | null {
+    const genusEntry = this.pokemonSpecies?.genera?.find(
+      (g: any) => g.language.name === lang
+    );
+    return genusEntry ? genusEntry.genus : null;
+  }
+
+  getAbilities(): string {
+    if (!this.pokemon?.info?.abilities) {
+      return '';
     }
-
-    this.activeModal.close('saved'); // fecha o modal após salvar
-
-    //this.listapokemon.getCardStyle(this.pokemon);
+    return this.pokemon.info.abilities
+      .map((a: any) => a.ability.name.replace('-', ' '))
+      .join(', ');
   }
 
   fechar(): void {
-    this.activeModal.dismiss('dismissed'); // ou .close() se quiser finalizar normalmente
+    this.activeModal.dismiss();
   }
 }

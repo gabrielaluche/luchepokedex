@@ -1,43 +1,78 @@
-<div class="modal-header" [ngStyle]="getStyleColors(pokemon)">
-  <h5 class="modal-title text-capitalize">{{ pokemon?.nome }}</h5>
-  <button
-    type="button"
-    class="btn-close"
-    aria-label="Close"
-    (click)="fechar()"
-  ></button>
-</div>
+<div class="modal-content-container" [ngStyle]="getStyleColors(pokemon)">
 
-<div class="modal-body">
-  <div class="text-center mb-3">
+  <div *ngIf="pokemon?.info" class="pokemon-image-container">
     <img
-      *ngIf="pokemon?.info?.sprites?.front_default"
-      [src]="pokemon.info.sprites.front_default"
-      alt="{{ pokemon.nome }}"
-      class="img-fluid"
-      style="max-height: 120px"
-    />
+      [src]="pokedexService.getPokemonImageUrl(pokemon.info.id)"
+      class="pokemon-image"
+      alt="Imagem do {{ pokemon?.info?.name }}"
+      appImageFallback
+      >
   </div>
 
-  <p><strong>Altura:</strong> {{ pokemon?.info?.height }}</p>
-  <p><strong>Peso:</strong> {{ pokemon?.info?.weight }}</p>
+  <div class="pokemon-details-card">
 
-  <p *ngIf="text"><strong>Texto:</strong> {{ text }}</p>
-</div>
+    <div class="pokemon-header">
+      <h2 class="pokemon-name">{{ pokemon?.info?.name | titlecase }}</h2>
+      <span class="pokemon-id">#{{ pokemon?.info?.id | padId }}</span>
+    </div>
 
-<div class="modal-footer">
-  <button
-    type="button"
-    class="btn btn-secondary"
-    (click)="fechar()"
-  >
-    {{ closeLabel || 'Fechar' }}
-  </button>
-  <button
-    type="button"
-    class="btn btn-primary"
-    (click)="saveChangeModal(modalId)"
-  >
-    {{ saveLabel || 'Salvar' }}
-  </button>
+    <div class="pokemon-types">
+      <span *ngFor="let typeInfo of pokemon?.info?.types" class="pokemon-type-badge">
+        {{ typeInfo.type.name | titlecase }}
+      </span>
+    </div>
+
+    <ul ngbNav #nav="ngbNav" class="nav-tabs-custom">
+      <li [ngbNavItem]="1">
+        <button ngbNavLink>Sobre</button>
+        <ng-template ngbTabContent>
+          <table class="table table-borderless table-sm mt-4">
+            <tbody>
+              <tr>
+                <td class="fw-bold" width="120px">Espécie</td>
+                <td>{{ getPokemonGenus('pt') || 'Desconhecida' }}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Altura</td>
+                <td>{{ (pokemon?.info?.height * 10) | number }} cm</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Peso</td>
+                <td>{{ pokemon?.info?.weight / 10 | number:'1.1-1' }} kg</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Habilidades</td>
+                <td>{{ getAbilities() | titlecase }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-template>
+      </li>
+      <li [ngbNavItem]="2">
+        <button ngbNavLink>Estatísticas</button>
+        <ng-template ngbTabContent>
+          <div *ngFor="let stat of pokemon?.info?.stats" class="mt-4">
+            <label class="form-label mb-0">{{ stat.stat.name | titlecase }}</label>
+            <div class="d-flex align-items-center">
+              <span class="stat-number me-3">{{ stat.base_stat }}</span>
+              <ngb-progressbar [value]="stat.base_stat" [max]="255"></ngb-progressbar>
+            </div>
+          </div>
+        </ng-template>
+      </li>
+       <li [ngbNavItem]="3">
+        <button ngbNavLink>Evolução</button>
+        <ng-template ngbTabContent>
+           <div class="mt-4 text-center">
+             <p *ngIf="!evolutionChain">Carregando evoluções...</p>
+             <div *ngIf="evolutionChain">
+                <p>Em breve...</p>
+             </div>
+           </div>
+        </ng-template>
+      </li>
+    </ul>
+
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+  </div>
 </div>

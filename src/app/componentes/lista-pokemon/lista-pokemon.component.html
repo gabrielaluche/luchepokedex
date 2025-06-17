@@ -22,10 +22,10 @@
     <!-- Imagem do Pokémon -->
     <div class="pokemon-image">
       <img
-        [src]="'https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/other/dream-world/' + pokemon.id + '.svg'"
+        [src]="pokedexService.getPokemonImageUrl(pokemon.id)"
         [alt]="pokemon.nome + ' image'"
         class="pokemon-card-image"
-        (error)="setFallbackImage($event)"
+        appImageFallback
       />
     </div>
 
@@ -34,15 +34,12 @@
       {{ pokemon.nome }}
     </span>
     <div class="type-icon-wrapper">
-      <ng-container *ngFor="let tipo of pokemon.info?.types">
-        <div
-          class="pokemon-type-icon"
-          [ngStyle]="{
-            'background-image': 'url(../assets/imagens/icones/' + tipo.type.name + '.svg)',
-            'background-color': getStyleColors(pokemon) || '#777'
-          }">
-        </div>
-      </ng-container>
+
+      <div *ngFor="let typeInfo of pokemon.info.types"
+           class="pokemon-type-icon"
+           [style.background-image]="'url(' + pokedexService.getTypeIcon(typeInfo.type.name) + ')'">
+      </div>
+
     </div>
     <div class="pokemon-type-text">
       <ng-container *ngFor="let tipo of pokemon.info?.types; let last = last">

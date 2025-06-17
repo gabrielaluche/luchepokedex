@@ -1,26 +1,120 @@
-:host ::ng-deep .modal-content {
-  border-radius: 1rem;
+// ===================================================================
+// Bloco de "RESET" - O MAIS IMPORTANTE
+// Garante que o container padrão do Bootstrap não vai interferir no nosso design.
+// Colocá-lo no topo garante sua prioridade.
+// ===================================================================
+:host ::ng-deep .modal-header,
+:host ::ng-deep .modal-body,
+:host ::ng-deep .modal-footer {
+  padding: 0;
+  border: none;
+  background: none;
 }
 
-.background-details {
-font-size: 1.2rem;
-font-weight: 600;
-backdrop-filter: blur(10px);
-animation-fill-mode: forwards;
-animation-timing-function: ease-in-out;
-border-radius: 16px;
-justify-content: center;
-margin: 2px 2px;
-padding: 30px;
-max-width: 200px;
-height: 280px;
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-transition: transform 0.3s ease,
-box-shadow 0.3s ease;
-transform: scale(1.1);
-opacity: 0;
-animation: fadeIn 0.5s ease forwards;
+// ===================================================================
+// Estilos para o "Molde" do Modal
+// ===================================================================
+:host ::ng-deep .modal-content {
+  background: transparent;
+  border: none;
+  border-radius: 20px;
+  overflow: hidden; // ESSENCIAL para "cortar" os cantos dos filhos
+}
+
+:host ::ng-deep .modal-dialog {
+  max-width: 450px; // Largura que você definiu
+}
+
+// ===================================================================
+// Estilos do Nosso Design Customizado
+// ===================================================================
+.modal-content-container {
+  height: 650px;
+  border-radius: 20px; // A regra que corresponde ao .modal-content
+  position: relative;
+  overflow: hidden;
+}
+
+.pokemon-image-container {
+  height: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.pokemon-image {
+  max-height: 200px;
+  filter: drop-shadow(2px 4px 10px rgba(0, 0, 0, 0.4));
+}
+
+.pokemon-details-card {
+  background: white;
+  height: 65%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 30px 30px 0 0;
+  padding: 2rem;
+  padding-top: 5rem;
+}
+
+// O resto do seu CSS para .pokemon-header, .nav-tabs-custom, etc. continua igual
+.pokemon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pokemon-name {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.pokemon-id {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #888;
+}
+
+.pokemon-types {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pokemon-type-badge {
+  padding: 0.25rem 1rem;
+  border-radius: 20px;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #333;
+  font-weight: 500;
+}
+
+.nav-tabs-custom {
+  border-bottom: 2px solid #f0f0f0;
+  margin-top: 2rem;
+  padding-left: 0;
+
+  .nav-item .nav-link {
+    border: none;
+    background: none;
+    color: #aaa;
+    font-weight: 600;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+
+    &:hover {
+      color: #555;
+    }
+
+    &.active {
+      color: #333;
+      border-bottom-color: #5865f2;
+    }
+  }
 }

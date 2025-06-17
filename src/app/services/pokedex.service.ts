@@ -16,6 +16,28 @@ export class PokedexService {
 
   constructor(private http: HttpClient) {}
 
+  // Método que retorna APENAS a string do gradiente
+  getPokemonBackgroundGradient(pokemon: any): string {
+    if (
+      !pokemon ||
+      !pokemon.info ||
+      !pokemon.info.types ||
+      pokemon.info.types.length === 0
+    ) {
+      return '#A8A878'; // Retorna uma cor sólida de fallback
+    }
+
+    const types = pokemon.info.types.map((t: any) => t.type.name);
+    const color1 = this.esquemaCores[types[0]] || '#A8A878';
+
+    if (types.length > 1) {
+      const color2 = this.esquemaCores[types[1]] || '#A8A878';
+      return `linear-gradient(135deg, ${color1} 0%, ${color2} 100%)`;
+    }
+
+    return color1; // Retorna uma cor sólida se tiver apenas um tipo
+  }
+
   // Método que busca a lista de todos os Pokémons (exceto os especiais) contendo as informações nome e URL da imagem
   getListaPokemon(): Observable<PokemonCardResponse[]> {
     return this.http
@@ -26,17 +48,13 @@ export class PokedexService {
   getPokemonById(nome: string): Observable<PokemonInfoResponse> {
     return this.http.get<PokemonInfoResponse>(this.apiUrlPokemon + nome);
   }
-
-  getSpecies(pokemon: Pokemon) {
-    return this.http.get<any>(
-      `${this.baseUrl}/pokemon-species/${pokemon.name}`
-    );
+  // Metodo para buscar os dados da ESPÉCIE (gênero, textos, link da evolução)
+  getPokemonSpecies(id: string | number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/pokemon-species/${id}`);
   }
-
-  getEvolution(pokemon: Pokemon) {
-    return this.http.get<any>(
-      `${this.baseUrl}/evolution-chain/${pokemon.name}`
-    );
+  // Metodo para buscar os dados da cadeia de evolução
+  getEvolutionChain(url: string): Observable<any> {
+    return this.http.get(url);
   }
 
   saveText(text: String) {
@@ -70,9 +88,12 @@ export class PokedexService {
 
   // 2. Crie o método público que gera o estilo das cartas
   getStyleColors(pokemon: any): { [key: string]: any } {
-
     if (
-      !pokemon || !pokemon.info || !pokemon.info.types || pokemon.info.types.length === 0 ) {
+      !pokemon ||
+      !pokemon.info ||
+      !pokemon.info.types ||
+      pokemon.info.types.length === 0
+    ) {
       return { background: '#A8A878' };
     }
 
@@ -95,4 +116,25 @@ export class PokedexService {
       background: color1,
     };
   }
+
+  // Este método centraliza a lógica de construção da URL da imagem do pokemon
+  public getPokemonImageUrl(id: number | string): string {
+    // A URL base da imagem que queremos
+    const baseUrl =
+      'https://raw.githubusercontent.com/PokeAPI/sprites/refs/heads/master/sprites/pokemon/other/dream-world/';
+
+    // Retorna a URL completa
+    return `${baseUrl}${id}.svg`;
+  }
+
+  // Este método centraliza a lógica de construção da URL da imagem dos tipos do pokemon
+  public getTypeIcon(typeName: string): string {
+    if (!typeName) {
+      // Retorna um ícone padrão ou string vazia se o tipo for inválido
+      return 'assets/imagens/icones/normal.svg';
+    }
+    const baseUrl = 'assets/imagens/icones/';
+    return `${baseUrl}${typeName.toLowerCase()}.svg`;
+  }
 }
+
