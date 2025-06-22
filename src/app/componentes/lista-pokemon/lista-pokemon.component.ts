@@ -136,20 +136,5 @@ export class ListaPokemonComponent implements OnInit {
 
     modalRef.componentInstance.pokemon = pokemon;
 
-    modalRef.result.then(
-      (result) => {
-        // Este bloco é executado se o modal for fechado com .close()
-        console.log(`Modal fechado com resultado: ${result}`);
-        if (result === 'saved') {
-          console.log('O modal foi salvo, vou atualizar o que for preciso.');
-          // this.getCardStyle(pokemon); // Se precisar chamar a função novamente.
-          // ou this.recarregarLista();
-        }
-      },
-      (reason) => {
-        // Este bloco é executado se o modal for dispensado (clicando fora, ESC, ou .dismiss())
-        console.log(`Modal dispensado com motivo: ${reason}`);
-      }
-    );
   }
 }

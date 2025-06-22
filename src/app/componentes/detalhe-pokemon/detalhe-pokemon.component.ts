@@ -1,6 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+/* detalhe-pokemon.component.ts */
+import {
+  Component,  Input,  OnInit,  ChangeDetectorRef,  ViewChild } from '@angular/core';
 import { PokedexService } from 'src/app/services/pokedex.service';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import {  NgbActiveModal,  NgbNav,  NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
+import { forkJoin, of, Observable } from 'rxjs';
+import { catchError, switchMap, tap, map as rxJsMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-detalhe-pokemon',
@@ -9,75 +13,191 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 })
 export class DetalhePokemonComponent implements OnInit {
   @Input() pokemon: any;
+  @ViewChild('nav') nav?: NgbNav;
 
-  pokemonSpecies: any;
-  evolutionChain: any;
+  public activeTabId = 1;
+  public tabContent: any = null;
+  public isLoadingTab = false;
+
+  private pokemonSpecies: any;
+  private evolutionLine: any[] = [];
+  private pokemonTypeDetails: any = {};
 
   constructor(
     public pokedexService: PokedexService,
-    public activeModal: NgbActiveModal
+    public activeModal: NgbActiveModal,
+    private cdr: ChangeDetectorRef
   ) {}
 
+  //  ngOnInit agora gerencia a ordem das chamadas ###
   ngOnInit(): void {
     if (this.pokemon?.info) {
-      this.carregarDadosAdicionais();
-    }
-  }
-
-  carregarDadosAdicionais(): void {
-    this.pokedexService
-      .getPokemonSpecies(this.pokemon.info.id)
-      .subscribe((speciesData) => {
-        this.pokemonSpecies = speciesData;
-
-        if (speciesData.evolution_chain?.url) {
-          this.pokedexService
-            .getEvolutionChain(speciesData.evolution_chain.url)
-            .subscribe((evolutionData) => {
-              this.evolutionChain = evolutionData;
-            });
-        }
+      // Primeiro, chamamos a função que busca os dados e nos "inscrevemos" nela.
+      this.carregarDadosAdicionais().subscribe({
+        next: () => {
+          console.log('Dados carregados. Agora exibindo o conteúdo da aba :', this.activeTabId);
+          this.loadTabContent(this.activeTabId);
+        },
+        error: (err) => {
+          console.error('Falha ao carregar os dados iniciais do Pokémon.', err);
+        },
       });
-  }
-
-  get pokemonImageUrl(): string {
-    if (!this.pokemon?.info?.sprites) {
-      return '';
     }
-    const sprites = this.pokemon.info.sprites;
-    return (
-      sprites.other?.['official-artwork']?.front_default ||
-      sprites.front_default ||
-      ''
-    );
   }
 
-  onImageError(event: Event) {
-    (event.target as HTMLImageElement).src =
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';
+  public onTabChange(event: NgbNavChangeEvent): void {
+    this.loadTabContent(event.nextId);
+  }
+
+  private loadTabContent(tabId: number): void {
+    this.isLoadingTab = true;
+    this.tabContent = null;
+    setTimeout(() => {
+      switch (tabId) {
+        case 1:
+          this.tabContent = this.getAboutData();
+          break;
+        case 2:
+          this.tabContent = this.getBaseStatsData();
+          break;
+        case 3:
+          this.tabContent = this.getEvolutionData();
+          break;
+      }
+      this.isLoadingTab = false;
+      this.cdr.detectChanges();
+    }, 300);
+  }
+
+  private getAboutData(): object {
+    return {
+      title: 'About',
+      species:
+        this.pokemonSpecies?.genera?.find((g: any) => g.language.name === 'en')
+          ?.genus || 'Unknown',
+      height: this.pokemon.info.height / 10,
+      weight: this.pokemon.info.weight / 10,
+      abilities: this.pokemon.info.abilities
+        .map((a: any) => a.ability.name.replace('-', ' '))
+        .join(', '),
+    };
+  }
+
+  private getBaseStatsData(): object {
+    const stats = this.pokemon.info.stats;
+    const total = stats
+      .map((s: any) => s.base_stat)
+      .reduce((acc: number, value: number) => acc + value, 0);
+    return {
+      title: 'Base Stats',
+      stats: stats.map((s: any) => ({
+        name: s.stat.name.replace('-', ' '),
+        value: s.base_stat,
+      })),
+      total: total,
+      typeDefenses: this.calculateTypeDefenses(),
+    };
+  }
+
+  private getEvolutionData(): object {
+    return {
+      title: 'Evolution Line',
+      line: this.evolutionLine.length > 1 ? this.evolutionLine : null,
+    };
+  }
+
+  // ### MUDANÇA CRÍTICA 2: A função agora retorna um Observable ###
+  private carregarDadosAdicionais(): Observable<any> {
+    // 1. Prepara o observable para buscar dados da espécie e, em seguida, da evolução
+    const speciesAndEvolution$ = this.pokedexService
+      .getPokemonSpecies(this.pokemon.info.id)
+      .pipe(
+        tap((speciesData) => {
+          this.pokemonSpecies = speciesData; // Armazena os dados
+        }),
+        switchMap((speciesData) => {
+          if (speciesData.evolution_chain?.url) {
+            return this.pokedexService
+              .getEvolutionChain(speciesData.evolution_chain.url)
+              .pipe(
+                tap((evolutionData) => {
+                  this.parseEvolutionChain(evolutionData.chain); // Processa os dados
+                })
+              );
+          }
+          return of(null); // Retorna um observable vazio se não tiver evolução
+        })
+      );
+
+    // 2. Prepara um array de observables para buscar os detalhes de todos os tipos do Pokémon
+    const typeDetails$ = forkJoin(
+      this.pokemon.info.types.map((typeInfo: any) =>
+        this.pokedexService
+          .getTypeDetails(typeInfo.type.name)
+          .pipe(catchError(() => of(null)))
+      )
+    ).pipe(
+
+      rxJsMap((result) => result as any[]),
+
+      tap((typeDetailsArray: any[]) => {
+        typeDetailsArray.forEach((typeDetail) => {
+          if (typeDetail) {
+            this.pokemonTypeDetails[typeDetail.name] =
+              typeDetail.damage_relations;
+          }
+        });
+      })
+    );
+
+    // 3. Retorna um forkJoin que só vai completar quando AMBAS as operações (1 e 2) terminarem.
+    return forkJoin([speciesAndEvolution$, typeDetails$]);
+  }
+
+  private parseEvolutionChain(chain: any): void {
+    const evolutionLine: any[] = [];
+    let current = chain;
+    while (current) {
+      const id = this.extractIdFromUrl(current.species.url);
+      evolutionLine.push({
+        id: id,
+        name: current.species.name,
+        imageUrl: this.pokedexService.getPokemonImageUrl(id),
+      });
+      current = current.evolves_to?.[0];
+    }
+    this.evolutionLine = evolutionLine;
+  }
+
+  private calculateTypeDefenses(): object {
+    const weaknesses: string[] = [];
+    const resistances: string[] = [];
+    for (const typeName in this.pokemonTypeDetails) {
+      const relations = this.pokemonTypeDetails[typeName];
+      if (relations) {
+        relations.double_damage_from.forEach((t: any) =>
+          weaknesses.push(t.name)
+        );
+        relations.half_damage_from.forEach((t: any) =>
+          resistances.push(t.name)
+        );
+      }
+    }
+    return {
+      weaknesses: [...new Set(weaknesses)],
+      resistances: [...new Set(resistances)],
+    };
+  }
+
+  private extractIdFromUrl(url: string): string {
+    return url.split('/').filter(Boolean).pop() || '';
   }
 
   getStyleColors(pokemon: any) {
     return this.pokedexService.getStyleColors(pokemon);
   }
 
-  getPokemonGenus(lang: string): string | null {
-    const genusEntry = this.pokemonSpecies?.genera?.find(
-      (g: any) => g.language.name === lang
-    );
-    return genusEntry ? genusEntry.genus : null;
-  }
-
-  getAbilities(): string {
-    if (!this.pokemon?.info?.abilities) {
-      return '';
-    }
-    return this.pokemon.info.abilities
-      .map((a: any) => a.ability.name.replace('-', ' '))
-      .join(', ');
-  }
-
-  fechar(): void {
+  public fechar(): void {
     this.activeModal.dismiss();
   }
 }

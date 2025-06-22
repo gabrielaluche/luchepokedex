@@ -1,9 +1,10 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
-import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { NgbModule, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
@@ -13,7 +14,6 @@ import { SearchHeaderComponent } from './componentes/search-header/search-header
 import { DetalhePokemonComponent } from './componentes/detalhe-pokemon/detalhe-pokemon.component';
 
 import { PokedexService } from './services/pokedex.service';
-import { HttpClientModule } from '@angular/common/http';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { PadIdPipe } from './pipes/pad-id.pipe';
 import { ImageFallbackDirective } from './directives/image-fallback.directive';
@@ -37,7 +37,7 @@ import { ImageFallbackDirective } from './directives/image-fallback.directive';
     InfiniteScrollModule,
     BrowserAnimationsModule,
     NgbModule,
-    NgbNavModule,
+    NgbNavModule
   ],
   providers: [PokedexService],
   bootstrap: [AppComponent],

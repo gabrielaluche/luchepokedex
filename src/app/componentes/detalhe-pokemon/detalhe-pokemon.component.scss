@@ -1,42 +1,15 @@
 // ===================================================================
-// Bloco de "RESET" - O MAIS IMPORTANTE
-// Garante que o container padrão do Bootstrap não vai interferir no nosso design.
-// Colocá-lo no topo garante sua prioridade.
-// ===================================================================
-:host ::ng-deep .modal-header,
-:host ::ng-deep .modal-body,
-:host ::ng-deep .modal-footer {
-  padding: 0;
-  border: none;
-  background: none;
-}
-
-// ===================================================================
-// Estilos para o "Molde" do Modal
-// ===================================================================
-:host ::ng-deep .modal-content {
-  background: transparent;
-  border: none;
-  border-radius: 20px;
-  overflow: hidden; // ESSENCIAL para "cortar" os cantos dos filhos
-}
-
-:host ::ng-deep .modal-dialog {
-  max-width: 450px; // Largura que você definiu
-}
-
-// ===================================================================
 // Estilos do Nosso Design Customizado
 // ===================================================================
 .modal-content-container {
-  height: 650px;
-  border-radius: 20px; // A regra que corresponde ao .modal-content
+  height: 700px;
+  border-radius: 30px; // A regra que corresponde ao .modal-content
   position: relative;
   overflow: hidden;
 }
 
 .pokemon-image-container {
-  height: 40%;
+  height: 30%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -52,32 +25,32 @@
 .pokemon-details-card {
   background: white;
   height: 65%;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  border-radius: 30px 30px 0 0;
+  position: relative;
+  border-radius: 30px;
   padding: 2rem;
-  padding-top: 5rem;
+  padding-top: 10px;
 }
 
-// O resto do seu CSS para .pokemon-header, .nav-tabs-custom, etc. continua igual
 .pokemon-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 10px;
 }
 
 .pokemon-name {
-  font-size: 2.2rem;
+  font-size: 2.0rem;
   font-weight: bold;
-  color: #333;
+  color: #fff;
+  margin-left: 30px;
 }
 
 .pokemon-id {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
-  color: #888;
+  color: #fff;
+  margin-top: 40px;
+  margin-right: 30px;
 }
 
 .pokemon-types {
@@ -94,14 +67,19 @@
   font-weight: 500;
 }
 
+// Estilização das abas com um seletor mais robusto
 .nav-tabs-custom {
+  display: flex;
   border-bottom: 2px solid #f0f0f0;
   margin-top: 2rem;
   padding-left: 0;
+  gap: 2rem;
 
-  .nav-item .nav-link {
-    border: none;
-    background: none;
+  li [ngbNavLink] {
+    // Usamos !important aqui como garantia final para vencer qualquer estilo padrão
+    border: none !important;
+    background: none !important;
+
     color: #aaa;
     font-weight: 600;
     padding-bottom: 1rem;
@@ -112,9 +90,23 @@
       color: #555;
     }
 
+    // A regra para a aba ativa também é ajustada para ser mais específica
     &.active {
-      color: #333;
-      border-bottom-color: #5865f2;
+      color: #333 !important; // Cor escura para o texto
+      border-bottom-color: #5865f2 !important; // A linha de destaque
     }
   }
+}
+
+.evolution-image {
+  width: 90px;
+  height: 90px;
+}
+
+.tab-content-container {
+  // A propriedade mágica: faz o elemento crescer para ocupar o espaço vertical restante
+  flex-grow: 1;
+
+  // Adiciona uma barra de rolagem vertical apenas se o conteúdo for maior que o espaço
+  overflow-y: auto;
 }

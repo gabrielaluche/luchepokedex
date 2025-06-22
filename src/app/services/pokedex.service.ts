@@ -56,15 +56,14 @@ export class PokedexService {
   getEvolutionChain(url: string): Observable<any> {
     return this.http.get(url);
   }
-
-  saveText(text: String) {
-    console.log('Service save text : ' + text);
+  // Método que busca os detalhes de um tipo específico
+  // Exemplo: getTypeDetails('fire') retorna os detalhes do tipo Fogo
+  public getTypeDetails(typeName: string): Observable<any> {
+    const url = `${this.baseUrl}/type/${typeName}`;
+    return this.http.get<any>(url);
   }
 
-  saveTitle(title: String) {
-    console.log('Service save title : ' + title);
-  }
-
+  // Método que retorna o esquema de cores dos cards, baseado nos tipos dos Pokémons
   private esquemaCores: { [key: string]: string } = {
     grass: '#78C850',
     fire: '#F08030',
@@ -86,7 +85,7 @@ export class PokedexService {
     flying: '#A890F0',
   };
 
-  // 2. Crie o método público que gera o estilo das cartas
+  //Metodo que define o estilo de cores dos cards
   getStyleColors(pokemon: any): { [key: string]: any } {
     if (
       !pokemon ||

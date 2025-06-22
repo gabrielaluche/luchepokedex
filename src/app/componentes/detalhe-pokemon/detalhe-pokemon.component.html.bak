@@ -1,0 +1,42 @@
+<div class="modal-content-container" [ngStyle]="getStyleColors(pokemon)">
+  <div class="pokemon-header">
+    <h2 class="pokemon-name">{{ pokemon?.info?.name | titlecase }}</h2>
+    <span class="pokemon-id">#{{ pokemon?.info?.id | padId }}</span>
+  </div>
+  <div *ngIf="pokemon?.info" class="pokemon-image-container">
+    <img
+      [src]="pokedexService.getPokemonImageUrl(pokemon.info.id)"
+      class="pokemon-image"
+      alt="Imagem do {{ pokemon?.info?.name }}"
+      appImageFallback
+    />
+  </div>
+  <div class="pokemon-details-card">
+    <div class="pokemon-types">
+      <span
+        *ngFor="let typeInfo of pokemon?.info?.types"
+        class="pokemon-type-badge"
+      >
+        {{ typeInfo.type.name | titlecase }}
+      </span>
+    </div>
+    <ul ngbNav #nav="ngbNav" class="nav-tabs-custom" [activeId]="1">
+      <li [ngbNavItem]="1">
+        <button ngbNavLink (click)="selectTab(1)">About</button>
+        <ng-template ngbTabContent>
+          </ng-template>
+      </li>
+      <li [ngbNavItem]="2">
+        <button ngbNavLink (click)="selectTab(2)">Stats</button>
+        <ng-template ngbTabContent>
+          </ng-template>
+      </li>
+      <li [ngbNavItem]="3">
+        <button ngbNavLink (click)="selectTab(3)">Evolution</button>
+        <ng-template ngbTabContent>
+          </ng-template>
+      </li>
+    </ul>
+    <div [ngbNavOutlet]="nav" class="mt-3 tab-content-container"></div>
+  </div>
+</div>

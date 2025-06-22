@@ -17,9 +17,22 @@ body {
 }
 
 .modal-maior .modal-content {
-  min-height: 750px;
+  min-height: 780px;
 }
 
 .modal-extra-grande .modal-content {
   min-height: 800px;
+}
+
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap';
+
+/*
+  Override global para o contêiner do modal.
+  Isso garante que ele fique 100% invisível, deixando seu design brilhar.
+*/
+.modal-content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
