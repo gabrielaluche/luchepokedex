@@ -47,7 +47,7 @@ export class DetalhePokemonComponent implements OnInit {
     }
   }
   // Método para selecionar uma aba diretamente, sem usar o ngbNav
-  public selecionarOpcao(id: number): void {
+  public selecionarAba(id: number): void {
     // Esta verificação evita recarregar a aba se o usuário clicar na que já está ativa
     if (this.activeTabId === id) {
       return;
@@ -57,18 +57,22 @@ export class DetalhePokemonComponent implements OnInit {
     this.loadTabContent(id);
   }
 
+  // Método que trata quando selecionadas as opções das abas do modal
   private loadTabContent(tabId: number): void {
     this.isLoadingTab = true;
     this.tabContent = null;
     setTimeout(() => {
       switch (tabId) {
-        case 1:
+        case 1: // Opção 1: Dados sobre o Pokémon
           this.tabContent = this.getAboutData();
           break;
-        case 2:
+        case 2: // Opção 2: Estatísticas base do Pokémon
           this.tabContent = this.getBaseStatsData();
           break;
-        case 3:
+        case 3: // Opção 3: Dados de batalha do Pokémon
+          this.tabContent = this.getBattleData();
+          break;
+        case 4: // Opção 4: Dados de evolução do Pokémon
           this.tabContent = this.getEvolutionData();
           break;
       }
@@ -77,31 +81,7 @@ export class DetalhePokemonComponent implements OnInit {
     }, 300);
   }
 
-  /*
-  public onTabChange(event: NgbNavChangeEvent): void {
-    this.loadTabContent(event.nextId);
-  }
-
-  private loadTabContent(tabId: number): void {
-    this.isLoadingTab = true;
-    this.tabContent = null;
-    setTimeout(() => {
-      switch (tabId) {
-        case 1:
-          this.tabContent = this.getAboutData();
-          break;
-        case 2:
-          this.tabContent = this.getBaseStatsData();
-          break;
-        case 3:
-          this.tabContent = this.getEvolutionData();
-          break;
-      }
-      this.isLoadingTab = false;
-      this.cdr.detectChanges();
-    }, 300);
-  }
-*/
+  // Método que retorna os dados sobre o Pokémon - opção 1
   private getAboutData(): object {
     return {
       title: 'About',
@@ -116,7 +96,7 @@ export class DetalhePokemonComponent implements OnInit {
     };
   }
 
-  // Método que retorna os dados de estatísticas base do Pokémon
+  // Método que retorna os dados de estatísticas base do Pokémon - opção 2
   private getBaseStatsData(): object {
     const stats = this.pokemon.info.stats;
     const total = stats
@@ -129,10 +109,18 @@ export class DetalhePokemonComponent implements OnInit {
         value: s.base_stat,
       })),
       total: total,
+    };
+  }
+
+  // Método que retorna os dados de batalha do Pokémon - opção 3
+  private getBattleData(): object {
+    return {
+      title: 'Battle',
       typeDefenses: this.calculateTypeDefenses(),
     };
   }
 
+  // Método que retorna os dados de evolução do Pokémon - opção 4
   private getEvolutionData(): object {
     return {
       title: 'Evolution Line',
@@ -213,8 +201,12 @@ export class DetalhePokemonComponent implements OnInit {
     for (const typeName in this.pokemonTypeDetails) {
       const relations = this.pokemonTypeDetails[typeName];
       if (relations) {
-        relations.double_damage_from.forEach((t: any) => weaknesses.push(t.name));
-        relations.half_damage_from.forEach((t: any) => resistances.push(t.name));
+        relations.double_damage_from.forEach((t: any) =>
+          weaknesses.push(t.name)
+        );
+        relations.half_damage_from.forEach((t: any) =>
+          resistances.push(t.name)
+        );
       }
     }
     return {
@@ -222,7 +214,6 @@ export class DetalhePokemonComponent implements OnInit {
       resistances: [...new Set(resistances)],
     };
   }
-
 
   private extractIdFromUrl(url: string): string {
     return url.split('/').filter(Boolean).pop() || '';

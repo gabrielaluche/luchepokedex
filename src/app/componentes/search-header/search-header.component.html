@@ -5,14 +5,14 @@
       <div class="pokeball-icon">
         <div class="pokemon-pin"></div>
       </div>
-      <span>PokéBusca</span>
+      <span>PokéSearch</span>
     </div>
 
     <!-- Search Bar -->
     <div class="search-bar">
       <input
         type="text"
-        placeholder="Search..."
+        placeholder="search for name, id or type..."
         class="search-input"
         (keyup)="debounce.next($event.target)"
         [value]="value"
@@ -29,7 +29,5 @@
       </svg>
     </div>
 
-    <!-- Action Button -->
-    <button class="action-button">Minha Coleção</button>
   </div>
 </header>

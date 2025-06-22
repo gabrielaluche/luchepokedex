@@ -2,10 +2,11 @@
 // Estilos do Nosso Design Customizado
 // ===================================================================
 .modal-content-container {
-  height: 700px;
   border-radius: 30px; // A regra que corresponde ao .modal-content
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .pokemon-image-container {
@@ -13,7 +14,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+  position: initial;
+  margin-top: -30px;
   z-index: 2;
 }
 
@@ -29,6 +31,10 @@
   border-radius: 30px;
   padding: 2rem;
   padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .pokemon-header {
@@ -165,6 +171,35 @@
 
     strong {
       margin-right: 8px; // Espaço depois do título (ex: "Weaknesses:")
+      line-height: 5px;
+    }
+  }
+}
+
+// Estilos para a nova aba "Battle"
+.battle-defenses {
+  h6 {
+    font-weight: bold;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .defense-section {
+    margin-top: 0;
+
+    strong {
+      display: block; // Faz o título (Weaknesses/Resistances) ocupar uma linha
+      margin-bottom: 0.5rem;
+    }
+
+    .badges-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
     }
   }
 }
