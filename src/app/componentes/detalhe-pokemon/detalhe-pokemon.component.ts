@@ -1,8 +1,7 @@
 /* detalhe-pokemon.component.ts */
-import {
-  Component,  Input,  OnInit,  ChangeDetectorRef,  ViewChild } from '@angular/core';
+import { Component,  Input,  OnInit,  ChangeDetectorRef,  ViewChild } from '@angular/core';
 import { PokedexService } from 'src/app/services/pokedex.service';
-import {  NgbActiveModal,  NgbNav,  NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal,  NgbNav,  NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin, of, Observable } from 'rxjs';
 import { catchError, switchMap, tap, map as rxJsMap } from 'rxjs/operators';
 
@@ -35,7 +34,10 @@ export class DetalhePokemonComponent implements OnInit {
       // Primeiro, chamamos a função que busca os dados e nos "inscrevemos" nela.
       this.carregarDadosAdicionais().subscribe({
         next: () => {
-          console.log('Dados carregados. Agora exibindo o conteúdo da aba :', this.activeTabId);
+          console.log(
+            'Dados carregados. Agora exibindo o conteúdo da aba :',
+            this.activeTabId
+          );
           this.loadTabContent(this.activeTabId);
         },
         error: (err) => {
@@ -44,7 +46,38 @@ export class DetalhePokemonComponent implements OnInit {
       });
     }
   }
+  // Método para selecionar uma aba diretamente, sem usar o ngbNav
+  public selecionarOpcao(id: number): void {
+    // Esta verificação evita recarregar a aba se o usuário clicar na que já está ativa
+    if (this.activeTabId === id) {
+      return;
+    }
 
+    this.activeTabId = id;
+    this.loadTabContent(id);
+  }
+
+  private loadTabContent(tabId: number): void {
+    this.isLoadingTab = true;
+    this.tabContent = null;
+    setTimeout(() => {
+      switch (tabId) {
+        case 1:
+          this.tabContent = this.getAboutData();
+          break;
+        case 2:
+          this.tabContent = this.getBaseStatsData();
+          break;
+        case 3:
+          this.tabContent = this.getEvolutionData();
+          break;
+      }
+      this.isLoadingTab = false;
+      this.cdr.detectChanges();
+    }, 300);
+  }
+
+  /*
   public onTabChange(event: NgbNavChangeEvent): void {
     this.loadTabContent(event.nextId);
   }
@@ -68,7 +101,7 @@ export class DetalhePokemonComponent implements OnInit {
       this.cdr.detectChanges();
     }, 300);
   }
-
+*/
   private getAboutData(): object {
     return {
       title: 'About',
@@ -83,6 +116,7 @@ export class DetalhePokemonComponent implements OnInit {
     };
   }
 
+  // Método que retorna os dados de estatísticas base do Pokémon
   private getBaseStatsData(): object {
     const stats = this.pokemon.info.stats;
     const total = stats
@@ -106,7 +140,7 @@ export class DetalhePokemonComponent implements OnInit {
     };
   }
 
-  // ### MUDANÇA CRÍTICA 2: A função agora retorna um Observable ###
+  // Método que carrega os dados adicionais do Pokémon, como espécie, evolução e tipos
   private carregarDadosAdicionais(): Observable<any> {
     // 1. Prepara o observable para buscar dados da espécie e, em seguida, da evolução
     const speciesAndEvolution$ = this.pokedexService
@@ -137,7 +171,6 @@ export class DetalhePokemonComponent implements OnInit {
           .pipe(catchError(() => of(null)))
       )
     ).pipe(
-
       rxJsMap((result) => result as any[]),
 
       tap((typeDetailsArray: any[]) => {
@@ -169,18 +202,19 @@ export class DetalhePokemonComponent implements OnInit {
     this.evolutionLine = evolutionLine;
   }
 
+  /**
+   * Calcula as defesas (fraquezas, resistências, imunidades) do Pokémon
+   * com base nos detalhes de tipo pré-carregados.
+   * @returns {object} Um objeto com as defesas agregadas.
+   */
   private calculateTypeDefenses(): object {
     const weaknesses: string[] = [];
     const resistances: string[] = [];
     for (const typeName in this.pokemonTypeDetails) {
       const relations = this.pokemonTypeDetails[typeName];
       if (relations) {
-        relations.double_damage_from.forEach((t: any) =>
-          weaknesses.push(t.name)
-        );
-        relations.half_damage_from.forEach((t: any) =>
-          resistances.push(t.name)
-        );
+        relations.double_damage_from.forEach((t: any) => weaknesses.push(t.name));
+        relations.half_damage_from.forEach((t: any) => resistances.push(t.name));
       }
     }
     return {
@@ -188,6 +222,7 @@ export class DetalhePokemonComponent implements OnInit {
       resistances: [...new Set(resistances)],
     };
   }
+
 
   private extractIdFromUrl(url: string): string {
     return url.split('/').filter(Boolean).pop() || '';

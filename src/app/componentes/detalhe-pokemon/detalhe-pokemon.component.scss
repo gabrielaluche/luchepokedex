@@ -110,3 +110,61 @@
   // Adiciona uma barra de rolagem vertical apenas se o conteúdo for maior que o espaço
   overflow-y: auto;
 }
+
+.evolution-line {
+  display: flex;
+  flex-direction: row; // Alinha os itens horizontalmente
+  align-items: center; // Centraliza os itens verticalmente (pokémon e seta)
+  justify-content: center; // Centraliza todo o conjunto no meio do espaço
+  flex-wrap: wrap; // Permite que a linha quebre em telas pequenas
+  gap: 1rem; // Adiciona um espaço entre os elementos
+}
+
+.evolution-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+.evolution-arrow {
+
+  // Estilo para a seta. Ajuste conforme necessário.
+  svg {
+    width: 32px;
+    height: 32px;
+    fill: #888; // Uma cor cinza para a seta
+  }
+}
+
+// Adicione ou modifique estes estilos no seu .scss
+
+.type-defenses {
+  h6 {
+    font-weight: bold; // Deixar o título "Type Defenses" em negrito
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  // Este é o estilo principal para corrigir a exibição
+  >div {
+    // Aplica aos containers de "Weaknesses" e "Resistances"
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; // Essencial para que os badges quebrem a linha se forem muitos
+    gap: 8px; // Um espaço entre o texto "Weaknesses:" e os badges
+
+    strong {
+      margin-right: 8px; // Espaço depois do título (ex: "Weaknesses:")
+    }
+  }
+}

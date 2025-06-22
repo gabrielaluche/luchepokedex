@@ -18,15 +18,15 @@
       </span>
     </div>
 
-    <ul ngbNav #nav="ngbNav" class="nav-tabs-custom" [(activeId)]="activeTabId" (navChange)="onTabChange($event)">
+    <ul ngbNav #nav="ngbNav" class="nav-tabs-custom" [(activeId)]="activeTabId">
       <li [ngbNavItem]="1">
-        <button ngbNavLink>About</button>
+        <button ngbNavLink (click)="selecionarOpcao(1)">About</button>
       </li>
       <li [ngbNavItem]="2">
-        <button ngbNavLink>Stats</button>
+        <button ngbNavLink (click)="selecionarOpcao(2)">Stats</button>
       </li>
       <li [ngbNavItem]="3">
-        <button ngbNavLink>Evolution</button>
+        <button ngbNavLink (click)="selecionarOpcao(3)">Evolution</button>
       </li>
     </ul>
 
@@ -38,10 +38,10 @@
       <div *ngIf="!isLoadingTab && tabContent">
 
         <div *ngIf="activeTabId === 1">
-          <p><strong>Species:</strong> {{ tabContent.species }}</p>
-          <p><strong>Height:</strong> {{ tabContent.height }} m</p>
-          <p><strong>Weight:</strong> {{ tabContent.weight }} kg</p>
-          <p><strong>Abilities:</strong> <span class="text-capitalize">{{ tabContent.abilities }}</span></p>
+          <p><strong>Species : </strong> {{ tabContent.species }}</p>
+          <p><strong>Height : </strong> {{ tabContent.height }} m</p>
+          <p><strong>Weight : </strong> {{ tabContent.weight }} kg</p>
+          <p><strong>Abilities : </strong> <span class="text-capitalize">{{ tabContent.abilities }}</span></p>
         </div>
 
         <div *ngIf="activeTabId === 2">
@@ -58,29 +58,35 @@
           </ul>
 
           <div class="type-defenses mt-3">
-              <h6>Type Defenses</h6>
-              <p>The effectiveness of each type on this Pokémon.</p>
-              <div>
-                  <strong>Weaknesses:</strong>
-                  <span *ngFor="let type of tabContent.typeDefenses.weaknesses" class="pokemon-type-badge">
-                      {{ type | titlecase }}
-                  </span>
-              </div>
-              <div class="mt-2">
-                  <strong>Resistances:</strong>
-                  <span *ngFor="let type of tabContent.typeDefenses.resistances" class="pokemon-type-badge">
-                      {{ type | titlecase }}
-                  </span>
-              </div>
-          </div>
+            <h6>Type Defenses</h6>
+            <p>The effectiveness of each type on this Pokémon.</p>
+            <div>
+                <strong>Weaknesses:</strong>
+                <span *ngFor="let type of tabContent.typeDefenses.weaknesses" class="pokemon-type-badge">
+                    {{ type | titlecase }}
+                </span>
+            </div>
+            <div>
+                <strong>Resistances:</strong>
+                <span *ngFor="let type of tabContent.typeDefenses.resistances" class="pokemon-type-badge">
+                    {{ type | titlecase }}
+                </span>
+            </div>
+        </div>
 
         </div>
         <div *ngIf="activeTabId === 3">
           <div *ngIf="tabContent.line; else noEvolution" class="evolution-line">
-            <div *ngFor="let evo of tabContent.line" class="evolution-step text-center">
-              <img [src]="evo.imageUrl" alt="{{ evo.name }}" width="80" height="80" appImageFallback />
-              <p class="text-capitalize mt-1">{{ evo.name }}</p>
-            </div>
+            <ng-container *ngFor="let evo of tabContent.line; let last = last">
+              <div class="evolution-step text-center">
+                <img [src]="evo.imageUrl" alt="{{ evo.name }}" appImageFallback />
+                <p class="text-capitalize mt-1">{{ evo.name }}</p>
+              </div>
+
+              <div *ngIf="!last" class="evolution-arrow">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16.01 11H4v2h12.01v3L20 12l-3.99-4v3z"/></svg>
+              </div>
+            </ng-container>
           </div>
           <ng-template #noEvolution>
             <p>This Pokémon does not evolve.</p>
